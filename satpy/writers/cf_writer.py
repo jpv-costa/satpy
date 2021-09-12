@@ -784,10 +784,13 @@ class CFWriter(Writer):
                 include_lonlats=include_lonlats, pretty=pretty, compression=compression,
                 include_orig_name=include_orig_name, numeric_name_prefix=numeric_name_prefix)
             dataset = xr.Dataset(datas)
+            dataset = dataset.sortby('time')
+            dataset = dataset.to_array(dim='band')
             if chunk is not None:
                 dataset = dataset.chunk(chunk)
             if 'time' in dataset:
                 _add_time_bounds(dataset, time_bounds)
+            
             else:
                 grp_str = ' of group {}'.format(group_name) if group_name is not None else ''
                 logger.warning('No time dimension in datasets{}, skipping time bounds creation.'.format(grp_str))
