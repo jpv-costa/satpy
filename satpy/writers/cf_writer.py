@@ -688,7 +688,7 @@ class CFWriter(Writer):
 
     def save_datasets(self, datasets, filename=None, groups=None, header_attrs=None, engine=None, epoch=EPOCH,
                       flatten_attrs=False, exclude_attrs=None, include_lonlats=True, pretty=False,
-                      compression=None, include_orig_name=True, numeric_name_prefix='CHANNEL_', **to_netcdf_kwargs):
+                      compression=None, include_orig_name=True, numeric_name_prefix='CHANNEL_', chunk=None, **to_netcdf_kwargs):
         """Save the given datasets in one netCDF file.
 
         Note that all datasets (if grouping: in one group) must have the same projection coordinates.
@@ -784,6 +784,8 @@ class CFWriter(Writer):
                 include_lonlats=include_lonlats, pretty=pretty, compression=compression,
                 include_orig_name=include_orig_name, numeric_name_prefix=numeric_name_prefix)
             dataset = xr.Dataset(datas)
+            if chunk is not None:
+                dataset = dataset.chunk(chunk)
             if 'time' in dataset:
                 _add_time_bounds(dataset, time_bounds)
             else:
